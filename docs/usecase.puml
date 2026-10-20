@@ -1,0 +1,44 @@
+@startuml
+left to right direction
+actor "Комірник" as SK
+actor "Менеджер" as MN
+actor "Адміністратор" as AD
+
+rectangle "Система обліку складу" {
+  usecase "Авторизація" as UC_Login
+  
+  usecase "Створити прибуткову накладну" as UC_In
+  usecase "Відвантажити товар" as UC_Out
+  usecase "Провести інвентаризацію" as UC_Inv
+  
+  usecase "Перегляд залишків" as UC_Stock
+  usecase "Сформувати звіт" as UC_Report
+  usecase "Управління постачальниками" as UC_Sup
+  
+  usecase "Управління користувачами" as UC_Users
+  usecase "Резервне копіювання БД" as UC_Backup
+  usecase "Налаштування системи" as UC_Settings
+  
+  usecase "Пошук товару" as UC_Search
+  usecase "Додати нового клієнта" as UC_NewClient
+}
+
+SK --> UC_In
+SK --> UC_Out
+SK --> UC_Inv
+
+MN --> UC_Stock
+MN --> UC_Report
+MN --> UC_Sup
+
+AD --> UC_Users
+AD --> UC_Backup
+AD --> UC_Settings
+
+UC_In ..> UC_Search : <<include>>
+UC_Out ..> UC_Search : <<include>>
+UC_Out <.. UC_NewClient : <<extend>>
+UC_Stock ..> UC_Login : <<include>>
+
+MN -|> SK : <<узагальнення>>
+@enduml
