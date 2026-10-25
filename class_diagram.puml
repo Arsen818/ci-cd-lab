@@ -1,0 +1,144 @@
+@startuml
+' Налаштування MVC класів
+class User {
+  + id: Int
+  + name: String
+  + email: String
+  + password: String
+  + role: String
+  + login(): Boolean
+  + logout(): void
+  + updateProfile(data: Array): Boolean
+  + checkRole(role: String): Boolean
+  + getEmail(): String
+}
+
+class Storekeeper {
+  + warehouseId: Int
+  + shiftStart: Date
+  + shiftEnd: Date
+  + accessLevel: Int
+  + certNumber: String
+  + receiveGoods(orderId: Int): Boolean
+  + issueGoods(orderId: Int): Boolean
+  + checkInventory(): Array
+  + startShift(): void
+  + endShift(): void
+}
+
+class Category {
+  + id: Int
+  + title: String
+  + description: String
+  + slug: String
+  + isActive: Boolean
+  + createCategory(data: Array): Boolean
+  + getProducts(): Array
+  + updateCategory(id: Int, data: Array): Boolean
+  + deleteCategory(id: Int): Boolean
+  + getTitle(): String
+}
+
+class Product {
+  + id: Int
+  + categoryId: Int
+  + name: String
+  + sku: String
+  + price: Float
+  + stock: Int
+  + saveProduct(): Boolean
+  + updateStock(qty: Int): void
+  + getDetails(): Array
+  + checkAvailability(qty: Int): Boolean
+  + calculateTotalValue(): Float
+}
+
+class Supplier {
+  + id: Int
+  + companyName: String
+  + contactPerson: String
+  + phone: String
+  + email: String
+  + addSupplier(data: Array): Boolean
+  + getOrders(): Array
+  + updateContact(phone: String): Boolean
+  + deleteSupplier(): Boolean
+  + getInfo(): String
+}
+
+class Order {
+  + id: Int
+  + userId: Int
+  + type: String
+  + status: String
+  + totalAmount: Float
+  + createdAt: Date
+  + createOrder(data: Array): Boolean
+  + calculateTotal(): Float
+  + changeStatus(status: String): void
+  + getItems(): Array
+  + generateInvoice(): String
+}
+
+class OrderItem {
+  + id: Int
+  + orderId: Int
+  + productId: Int
+  + quantity: Int
+  + unitPrice: Float
+  + addItem(data: Array): Boolean
+  + removeItem(): Boolean
+  + getSubtotal(): Float
+  + updateQuantity(qty: Int): Boolean
+  + getProductInfo(): Array
+}
+
+class ProductController {
+  + request: Array
+  + responseCode: Int
+  + viewName: String
+  + middleware: Array
+  + modelPath: String
+  + index(): View
+  + store(request: Request): Response
+  + show(id: Int): View
+  + update(request: Request, id: Int): Response
+  + destroy(id: Int): Response
+}
+
+class OrderController {
+  + request: Array
+  + currentStatus: String
+  + maxItemsAllowed: Int
+  + validationRules: Array
+  + errorMessage: String
+  + index(): View
+  + createOutbound(): View
+  + storeOutbound(req: Request): Response
+  + approve(id: Int): Response
+  + generatePdf(id: Int): File
+}
+
+class ReportController {
+  + dateFrom: Date
+  + dateTo: Date
+  + reportType: String
+  + exportFormat: String
+  + isGenerated: Boolean
+  + getStockReport(): View
+  + getMovementReport(): View
+  + exportToExcel(data: Array): File
+  + exportToPdf(data: Array): File
+  + calculateMetrics(): Array
+}
+
+' Зв'язки між класами
+Storekeeper --|> User : наслідує
+Category "1" *-- "0..*" Product : включає (композиція)
+Order "1" *-- "1..*" OrderItem : містить (композиція)
+Product "1" o-- "0..*" OrderItem : є частиною (агрегація)
+Supplier "1" --> "0..*" Order : має (асоціація)
+User "1" --> "0..*" Order : створює (асоціація)
+ProductController --> Product : керує
+OrderController --> Order : керує
+@enduml
