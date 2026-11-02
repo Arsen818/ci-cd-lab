@@ -1,50 +1,45 @@
 <?php
 
-use Faker\Factory;
+declare(strict_types=1);
 
 require_once 'vendor/autoload.php';
-require_once 'app/Services/EntityService.php';
-require_once 'app/Services/DataProcessor.php';
 
-echo '<h2>Завдання 1: Масиви</h2>';
-require_once 'app/Models/EntityArray.php';
+use App\Core\Database;
+use App\Core\EntityFactory;
+use App\Services\ConsoleLogger;
+use App\Services\EntityService;
+use App\Tasks\Artist;
+use App\Tasks\Car;
+use App\Tasks\Genre;
+use App\Tasks\Worker;
 
-echo '<h2>Завдання 2: Строга типізація</h2>';
-$total = EntityService::calculateTotal(1250.00, 11);
-echo "<p>Загальна вартість 11 товарів по 1250 грн: $total грн</p>";
+echo '<h3>1. Singleton:</h3>';
+$db = Database::getInstance();
+$db2 = Database::getInstance(); // Повідомлення виведеться лише раз
 
-echo '<h2>Завдання 3: Генерація даних (Faker) та фільтрація</h2>';
-$faker = Factory::create();
-$prices = [];
-for ($i = 0; $i < 10; $i++) {
-    $prices[] = $faker->randomFloat(2, 100, 5000);
-}
+echo '<h3>2. Factory, DI та Трейт:</h3>';
+$factory = new EntityFactory;
+$product = $factory->createEntity('product', [
+    'id' => '1', 'createdAt' => '2023-10-25', 'name' => 'Котел', 'price' => 25000,
+]);
 
-$minThreshold = 2000;
-$expensiveProducts = array_filter($prices, function ($price) use ($minThreshold) {
-    return $price > $minThreshold;
-});
+$logger = new ConsoleLogger;
+$service = new EntityService($logger);
+$service->processEntity($product);
 
-echo '<p>Усі ціни: '.implode('; ', $prices).'</p>';
-echo "<p>Ціни товарів вище $minThreshold грн: ".implode('; ', $expensiveProducts).'</p>';
+echo '<br>Експорт JSON: '.$product->exportToJson().'<br>';
 
-echo '<h2>Завдання 4: Обробка винятків</h2>';
-try {
-    echo '<p>Спроба застосувати знижку 150% до товару...</p>';
-    EntityService::applyDiscount(25000.50, 150);
-} catch (Exception $e) {
-    echo "<p style='color:red;'>Помилка: ".$e->getMessage().'</p>';
-} finally {
-    echo '<p>Завершення спроби розрахунку знижки.</p>';
-}
+echo '<h3>3. Індивідуальні завдання:</h3>';
+// Завдання 1: Композиція
+$genre = new Genre(1, 'Rock');
+$artist = new Artist(1, 'The Beatles', true, 1960);
+$genre->addArtist($artist);
+echo "Жанр: {$genre->name}, Артистів: ".count($genre->getArtists()).'<br>';
 
-echo '<h2>Завдання 5: Індивідуальне алгоритмічне завдання</h2>';
+// Завдання 2: Ієрархія
+$car = new Car(100);
+echo 'Час авто на 200км: '.$car->calculateTravelTime(200).' год<br>';
 
-$numbers = [15, 42, 8, 99, 23];
-echo '<p><strong>Таблиця 3.2:</strong> Вхідний масив [15, 42, 8, 99, 23] -> За спаданням: '.implode(', ', DataProcessor::sortDescending($numbers)).'</p>';
-
-$str3 = 'Це система обліку для складу опалювального обладнання';
-echo "<p><strong>Таблиця 3.3:</strong> 3 останні слова з '$str3' -> <em>".DataProcessor::getLastThreeWords($str3).'</em></p>';
-
-$str4 = 'Система відвантажує терморегулятори клієнтам щодня';
-echo "<p><strong>Таблиця 3.4:</strong> Оригінал: '$str4' <br> Результат: <em>".DataProcessor::shuffleMiddleWords($str4).'</em></p>';
+// Завдання 3: Інкапсуляція
+$worker = new Worker(10000, 50, 200);
+echo 'Зарплата працівника: '.$worker->calculateSalary().' грн<br>';
