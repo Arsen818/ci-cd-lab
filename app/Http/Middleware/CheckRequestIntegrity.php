@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Http\Middleware;
@@ -12,15 +11,14 @@ class CheckRequestIntegrity
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->isMethod('post') && ! $request->hasHeader('X-App-Client')) {
+        if ($request->isMethod('post') && !$request->hasHeader('X-Scanner-Token')) {
             return response()->json([
                 'status' => 'access_denied',
-                'message' => 'Відхилено: відсутній обов\'язковий заголовок ідентифікації (X-App-Client).',
+                'message' => 'Відхилено: відсутній обов\'язковий заголовок токена сканера (X-Scanner-Token).'
             ], 403);
         }
 
         $response = $next($request);
-
         $response->headers->set('X-Security-Policy', 'Enforced');
 
         return $response;

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
@@ -7,12 +6,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class BookController extends Controller
+class StockItemController extends Controller
 {
     private array $items = [
-        ['id' => 1, 'isbn' => '978-5-17-090956-2', 'title' => 'Алгоритми та структури даних', 'author' => 'Дональд Кнут', 'publication_year' => 2020],
-        ['id' => 2, 'isbn' => '978-617-12-0000-1', 'title' => 'Clean Code: Посібник з чистого написання коду', 'author' => 'Роберт Мартін', 'publication_year' => 2018],
-        ['id' => 3, 'isbn' => '978-966-938-000-2', 'title' => 'Програмування на PHP 8', 'author' => 'Кевін Тетлоу', 'publication_year' => 2022],
+        ['id' => 1, 'sku' => 'SKU-001-A', 'title' => 'Промисловий стелаж', 'quantity' => 15, 'location_zone' => 'Zone-A1'],
+        ['id' => 2, 'sku' => 'SKU-002-B', 'title' => 'Гідравлічний візок', 'quantity' => 5, 'location_zone' => 'Zone-B2'],
+        ['id' => 3, 'sku' => 'SKU-003-C', 'title' => 'Сканер штрихкодів', 'quantity' => 25, 'location_zone' => 'Zone-C3'],
     ];
 
     public function index(Request $request): JsonResponse
@@ -25,20 +24,19 @@ class BookController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-
         $validated = $request->validate([
-            'isbn' => ['required', 'string', 'min:10', 'max:20'],
+            'sku' => ['required', 'string', 'min:3', 'max:50'],
             'title' => ['required', 'string', 'min:2', 'max:255'],
-            'author' => ['required', 'string', 'min:2', 'max:255'],
-            'publication_year' => ['required', 'integer', 'min:1900', 'max:2026'],
+            'quantity' => ['required', 'integer', 'min:0'],
+            'location_zone' => ['required', 'string', 'min:2', 'max:50'],
         ]);
 
         $newItem = [
             'id' => count($this->items) + 1,
-            'isbn' => $validated['isbn'],
+            'sku' => $validated['sku'],
             'title' => $validated['title'],
-            'author' => $validated['author'],
-            'publication_year' => (int) $validated['publication_year'],
+            'quantity' => (int) $validated['quantity'],
+            'location_zone' => $validated['location_zone'],
         ];
 
         $this->items[] = $newItem;

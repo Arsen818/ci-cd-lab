@@ -14,12 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'product.access' => CheckRequestIntegrity::class,
+            'warehouse.access' => \App\Http\Middleware\CheckRequestIntegrity::class,
         ]);
-
+    
         $middleware->validateCsrfTokens(except: [
-            'books',
-            'books/*',
+            'warehouse',
+            'warehouse/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
