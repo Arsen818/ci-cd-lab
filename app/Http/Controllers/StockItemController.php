@@ -47,7 +47,7 @@ class StockItemController extends Controller
             'is_active' => (bool) ($validated['is_active'] ?? true),
         ]);
 
-        if (!empty($validated['suppliers'])) {
+        if (! empty($validated['suppliers'])) {
             $product->suppliers()->sync($validated['suppliers']);
         }
 
