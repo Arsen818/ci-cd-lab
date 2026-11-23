@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'product.access' => CheckRequestIntegrity::class,
+            'warehouse.access' => CheckRequestIntegrity::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
